@@ -1,7 +1,11 @@
+const port = 8080
+
 const express = require("express")
 const app = express()
+const path = require('path')
 
-const port = 8080
+const FileHelper = require('./utils/file-helper')
+const fh = new FileHelper(path.dirname(__dirname), port)
 
 async function startServer() {
   app.get('/', function (req, res) {
@@ -20,9 +24,14 @@ async function startServer() {
         .map(value => value.replace('.', ','))
         .join('\t')
 
-      console.info(frame)
+      const success = await fh.appendToFile(frame + '\n')
+      console.log(frame)
 
-      res.status(200).send()
+      if (success) {
+        res.status(200).send()
+      } else {
+        res.status(500).send('Failed to write to file')
+      }
     } catch (err) {
       console.log(err)
       res.status(500).send('Internal Server Error')
@@ -31,6 +40,7 @@ async function startServer() {
 
   app.get('/new', function (req, res) {
     try {
+      fh._filePath = null
       res.status(200).send()
     } catch (err) {
       console.log(err)
