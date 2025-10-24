@@ -1,8 +1,11 @@
+const Average = require('./average')
+
 class Monitor {
     constructor() {
         this.requestCount = 0
         this.lastDisplayCount = 0
         this.lastUpdateTime = Date.now()
+        this.averageRPS = new Average(3)
     }
 
     recordRequest() {
@@ -20,7 +23,8 @@ class Monitor {
 
         if (timeDiff > 0.1) {
             const requestPerSecond = requestSinceLastUpdate / timeDiff
-            process.stdout.write(`\rFrequency: ${Math.round(requestPerSecond)} Hz | Request count: ${this.requestCount}${' '.repeat(20)}`)
+            this.averageRPS.add(requestPerSecond)
+            process.stdout.write(`\rFrequency: ${Math.round(this.averageRPS.get())} Hz | Request count: ${this.requestCount}${' '.repeat(20)}`)
         }
 
         this.lastDisplayCount = this.requestCount
