@@ -1,2 +1,4 @@
 @echo off
-node Server\src\server.js
+call node Server\src\server.js
+echo Server off
+pause

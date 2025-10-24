@@ -1,3 +1,5 @@
 @echo off
-npm install
+echo Installing node dependencies...
+call npm install
+echo Install complete!
 pause
