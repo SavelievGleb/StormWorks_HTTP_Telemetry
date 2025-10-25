@@ -23,8 +23,16 @@ async function startServer() {
   app.get('/write', async function (req, res) {
     try {
       const queryParams = req.query
-      const frame = Object.values(queryParams)
-        .map(value => value.replace('.', ','))
+
+      const frameID = queryParams.frameID
+      if (!frameID) {
+        res.status(400).send('Missing frameID')
+        return
+      }
+
+      const frame = Object.entries(queryParams)
+        .filter(([key]) => /^p\d+$/.test(key))
+        .map(entry => entry[1].toString().replace('.', ','))
         .join('\t')
 
       const success = await fh.appendToFile(frame + '\n')
