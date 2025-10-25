@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<microprocessor name="HTTP Telemetry" description="No description set." width="2" length="1" id_counter="115" id_counter_node="2" sym6="9290" sym7="9290" sym8="58446" sym9="42058" sym10="61162">
+<microprocessor name="HTTP Telemetry" description="No description set." width="2" length="1" id_counter="119" id_counter_node="2" sym6="9290" sym7="9290" sym8="58446" sym9="42058" sym10="61162">
 	<nodes>
 		<n id="1" component_id="2">
 			<node label="Data" mode="1" type="5" description="The input signal to be processed."/>
@@ -20,7 +20,7 @@
 				<object id="6" script="gn, gb, sn, sb, pn, pb, pt = input.getNumber, input.getBool, output.setNumber, output.setBool, property.getNumber, property.getBool, property.getText
 pi, pi2, sin, cos, sqrt, atan, abs = math.pi, math.pi * 2, math.sin, math.cos, math.sqrt, math.atan, math.abs
 
-frequency = 60 / (pn('Data collect frequency') or 1) - 1
+frequency = math.max(0, math.floor(60 / (pn('Data collect frequency') or 1) + 0.5) - 1)
 port = 8080
 labelName = 'Channel'
 
@@ -124,11 +124,38 @@ end
 						<i l="30 hz">
 							<v text="30" value="30"/>
 						</i>
+						<i l="20 hz">
+							<v text="20" value="20"/>
+						</i>
 						<i l="15 hz">
 							<v text="15" value="15"/>
 						</i>
+						<i l="12 hz">
+							<v text="12" value="12"/>
+						</i>
+						<i l="10 hz">
+							<v text="10" value="10"/>
+						</i>
+						<i l="6 hz">
+							<v text="6" value="6"/>
+						</i>
+						<i l="4 hz">
+							<v text="4" value="4"/>
+						</i>
+						<i l="3 hz">
+							<v text="3" value="3"/>
+						</i>
+						<i l="2 hz">
+							<v text="2" value="2"/>
+						</i>
 						<i l="1 hz">
 							<v text="1" value="1"/>
+						</i>
+						<i l="05 hz">
+							<v text="0.5" value="0.5"/>
+						</i>
+						<i l="01 hz">
+							<v text="0.1" value="0.1"/>
 						</i>
 					</items>
 				</object>
@@ -137,18 +164,6 @@ end
 				<object id="77">
 					<pos x="7" y="-0.5"/>
 					<in1 component_id="6"/>
-				</object>
-			</c>
-			<c type="44">
-				<object id="78" l="Read" on="on" off="off">
-					<pos x="3" y="-2"/>
-					<in1 component_id="3"/>
-				</object>
-			</c>
-			<c type="44">
-				<object id="79" l="Send" on="on" off="off">
-					<pos x="8.5" y="-2"/>
-					<in1 component_id="82"/>
 				</object>
 			</c>
 			<c type="17">
@@ -332,7 +347,25 @@ end
 				</object>
 			</c>
 			<c type="43">
-				<object id="115" l="Querry">
+				<object id="116" l="Collect frequency">
+					<pos x="4.5" y="-2.5"/>
+					<in1 component_id="43"/>
+				</object>
+			</c>
+			<c type="44">
+				<object id="117" l="Read" on="on" off="off">
+					<pos x="3" y="-1.75"/>
+					<in1 component_id="3"/>
+				</object>
+			</c>
+			<c type="44">
+				<object id="118" l="Send" on="on" off="off">
+					<pos x="8.5" y="-2"/>
+					<in1 component_id="82"/>
+				</object>
+			</c>
+			<c type="43">
+				<object id="119" l="Querry">
 					<pos x="8.5" y="-0.75"/>
 					<in1 component_id="77"/>
 				</object>
@@ -355,7 +388,7 @@ end
 			<c0 id="6" script="gn, gb, sn, sb, pn, pb, pt = input.getNumber, input.getBool, output.setNumber, output.setBool, property.getNumber, property.getBool, property.getText
 pi, pi2, sin, cos, sqrt, atan, abs = math.pi, math.pi * 2, math.sin, math.cos, math.sqrt, math.atan, math.abs
 
-frequency = 60 / (pn('Data collect frequency') or 1) - 1
+frequency = math.max(0, math.floor(60 / (pn('Data collect frequency') or 1) + 0.5) - 1)
 port = 8080
 labelName = 'Channel'
 
@@ -457,11 +490,38 @@ end
 					<i l="30 hz">
 						<v text="30" value="30"/>
 					</i>
+					<i l="20 hz">
+						<v text="20" value="20"/>
+					</i>
 					<i l="15 hz">
 						<v text="15" value="15"/>
 					</i>
+					<i l="12 hz">
+						<v text="12" value="12"/>
+					</i>
+					<i l="10 hz">
+						<v text="10" value="10"/>
+					</i>
+					<i l="6 hz">
+						<v text="6" value="6"/>
+					</i>
+					<i l="4 hz">
+						<v text="4" value="4"/>
+					</i>
+					<i l="3 hz">
+						<v text="3" value="3"/>
+					</i>
+					<i l="2 hz">
+						<v text="2" value="2"/>
+					</i>
 					<i l="1 hz">
 						<v text="1" value="1"/>
+					</i>
+					<i l="05 hz">
+						<v text="0.5" value="0.5"/>
+					</i>
+					<i l="01 hz">
+						<v text="0.1" value="0.1"/>
 					</i>
 				</items>
 			</c1>
@@ -469,128 +529,132 @@ end
 				<pos x="7" y="-0.5"/>
 				<in1 component_id="6"/>
 			</c2>
-			<c3 id="78" l="Read" on="on" off="off">
-				<pos x="3" y="-2"/>
-				<in1 component_id="3"/>
-			</c3>
-			<c4 id="79" l="Send" on="on" off="off">
-				<pos x="8.5" y="-2"/>
-				<in1 component_id="82"/>
-			</c4>
-			<c5 id="80">
+			<c3 id="80">
 				<pos x="7" y="-1.5"/>
 				<in1 component_id="77"/>
-			</c5>
-			<c6 id="81" count="1">
+			</c3>
+			<c4 id="81" count="1">
 				<pos x="3" y="-0.75"/>
 				<inc component_id="2"/>
 				<in1 component_id="3"/>
-			</c6>
-			<c7 id="82">
+			</c4>
+			<c5 id="82">
 				<pos x="7" y="-2.25"/>
 				<in1 component_id="80"/>
 				<in2 component_id="3"/>
-			</c7>
-			<c8 id="83" n="Channel 1" v="Insert name">
+			</c5>
+			<c6 id="83" n="Channel 1" v="Insert name">
 				<pos x="1.5" y="-3.25"/>
-			</c8>
-			<c9 id="84" n="Channel 2">
+			</c6>
+			<c7 id="84" n="Channel 2">
 				<pos x="1.5" y="-3.75"/>
-			</c9>
-			<c10 id="85" n="Channel 3">
+			</c7>
+			<c8 id="85" n="Channel 3">
 				<pos x="1.5" y="-4.25"/>
-			</c10>
-			<c11 id="86" n="Channel 4">
+			</c8>
+			<c9 id="86" n="Channel 4">
 				<pos x="1.5" y="-4.75"/>
-			</c11>
-			<c12 id="87" n="Channel 5">
+			</c9>
+			<c10 id="87" n="Channel 5">
 				<pos x="1.5" y="-5.25"/>
-			</c12>
-			<c13 id="88" n="Channel 6">
+			</c10>
+			<c11 id="88" n="Channel 6">
 				<pos x="1.5" y="-5.75"/>
-			</c13>
-			<c14 id="89" n="Channel 7">
+			</c11>
+			<c12 id="89" n="Channel 7">
 				<pos x="1.5" y="-6.25"/>
-			</c14>
-			<c15 id="90" n="Channel 8">
+			</c12>
+			<c13 id="90" n="Channel 8">
 				<pos x="1.5" y="-6.75"/>
-			</c15>
-			<c16 id="91" n="Channel 9">
+			</c13>
+			<c14 id="91" n="Channel 9">
 				<pos x="3" y="-3.25"/>
-			</c16>
-			<c17 id="92" n="Channel 10">
+			</c14>
+			<c15 id="92" n="Channel 10">
 				<pos x="3" y="-3.75"/>
-			</c17>
-			<c18 id="93" n="Channel 11">
+			</c15>
+			<c16 id="93" n="Channel 11">
 				<pos x="3" y="-4.25"/>
-			</c18>
-			<c19 id="94" n="Channel 12">
+			</c16>
+			<c17 id="94" n="Channel 12">
 				<pos x="3" y="-4.75"/>
-			</c19>
-			<c20 id="95" n="Channel 13">
+			</c17>
+			<c18 id="95" n="Channel 13">
 				<pos x="3" y="-5.25"/>
-			</c20>
-			<c21 id="96" n="Channel 14">
+			</c18>
+			<c19 id="96" n="Channel 14">
 				<pos x="3" y="-5.75"/>
-			</c21>
-			<c22 id="97" n="Channel 15">
+			</c19>
+			<c20 id="97" n="Channel 15">
 				<pos x="3" y="-6.25"/>
-			</c22>
-			<c23 id="98" n="Channel 16">
+			</c20>
+			<c21 id="98" n="Channel 16">
 				<pos x="3" y="-6.75"/>
-			</c23>
-			<c24 id="99" n="Channel 17">
+			</c21>
+			<c22 id="99" n="Channel 17">
 				<pos x="4.5" y="-3.25"/>
-			</c24>
-			<c25 id="100" n="Channel 18">
+			</c22>
+			<c23 id="100" n="Channel 18">
 				<pos x="4.5" y="-3.75"/>
-			</c25>
-			<c26 id="101" n="Channel 19">
+			</c23>
+			<c24 id="101" n="Channel 19">
 				<pos x="4.5" y="-4.25"/>
-			</c26>
-			<c27 id="102" n="Channel 20">
+			</c24>
+			<c25 id="102" n="Channel 20">
 				<pos x="4.5" y="-4.75"/>
-			</c27>
-			<c28 id="103" n="Channel 21">
+			</c25>
+			<c26 id="103" n="Channel 21">
 				<pos x="4.5" y="-5.25"/>
-			</c28>
-			<c29 id="104" n="Channel 22">
+			</c26>
+			<c27 id="104" n="Channel 22">
 				<pos x="4.5" y="-5.75"/>
-			</c29>
-			<c30 id="105" n="Channel 23">
+			</c27>
+			<c28 id="105" n="Channel 23">
 				<pos x="4.5" y="-6.25"/>
-			</c30>
-			<c31 id="106" n="Channel 24">
+			</c28>
+			<c29 id="106" n="Channel 24">
 				<pos x="4.5" y="-6.75"/>
-			</c31>
-			<c32 id="107" n="Channel 25">
+			</c29>
+			<c30 id="107" n="Channel 25">
 				<pos x="6" y="-3.25"/>
-			</c32>
-			<c33 id="108" n="Channel 26">
+			</c30>
+			<c31 id="108" n="Channel 26">
 				<pos x="6" y="-3.75"/>
-			</c33>
-			<c34 id="109" n="Channel 27">
+			</c31>
+			<c32 id="109" n="Channel 27">
 				<pos x="6" y="-4.25"/>
-			</c34>
-			<c35 id="110" n="Channel 28">
+			</c32>
+			<c33 id="110" n="Channel 28">
 				<pos x="6" y="-4.75"/>
-			</c35>
-			<c36 id="111" n="Channel 29">
+			</c33>
+			<c34 id="111" n="Channel 29">
 				<pos x="6" y="-5.25"/>
-			</c36>
-			<c37 id="112" n="Channel 30">
+			</c34>
+			<c35 id="112" n="Channel 30">
 				<pos x="6" y="-5.75"/>
-			</c37>
-			<c38 id="113" n="Channel 31">
+			</c35>
+			<c36 id="113" n="Channel 31">
 				<pos x="6" y="-6.25"/>
-			</c38>
-			<c39 id="114" n="Channel 32">
+			</c36>
+			<c37 id="114" n="Channel 32">
 				<pos x="6" y="-6.75"/>
+			</c37>
+			<c38 id="116" l="Collect frequency">
+				<pos x="4.5" y="-2.5"/>
+				<in1 component_id="43"/>
+			</c38>
+			<c39 id="117" l="Read" on="on" off="off">
+				<pos x="3" y="-1.75"/>
+				<in1 component_id="3"/>
 			</c39>
-			<c40 id="115" l="Querry">
+			<c40 id="118" l="Send" on="on" off="off">
+				<pos x="8.5" y="-2"/>
+				<in1 component_id="82"/>
+			</c40>
+			<c41 id="119" l="Querry">
 				<pos x="8.5" y="-0.75"/>
 				<in1 component_id="77"/>
-			</c40>
+			</c41>
 		</component_states>
 		<component_bridge_states>
 			<c0 id="2">

@@ -1,7 +1,7 @@
 gn, gb, sn, sb, pn, pb, pt = input.getNumber, input.getBool, output.setNumber, output.setBool, property.getNumber, property.getBool, property.getText
 pi, pi2, sin, cos, sqrt, atan, abs = math.pi, math.pi * 2, math.sin, math.cos, math.sqrt, math.atan, math.abs
 
-frequency = 60 / (pn('Data collect frequency') or 1) - 1
+frequency = math.max(0, math.floor(60 / (pn('Data collect frequency') or 1) + 0.5) - 1)
 port = 8080
 labelName = 'Channel'
 
