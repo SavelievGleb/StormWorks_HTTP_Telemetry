@@ -74,7 +74,6 @@ function onTick()
             tickCounter = tickCounter + 1
         end
     else
-        httpReady = true
         labelSend = false
         new = false
     end
