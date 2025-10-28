@@ -35,14 +35,10 @@ async function startServer() {
         .map(entry => entry[1].toString().replace('.', ','))
         .join('\t')
 
-      const success = await fh.appendToFile(frame + '\n')
+      fh.appendToFile(frame + '\n')
 
-      if (success) {
-        monitor.recordRequest()
-        res.status(200).send()
-      } else {
-        res.status(500).send('Failed to write to file')
-      }
+      monitor.recordRequest()
+      res.status(200).send()
     } catch (err) {
       console.log(err)
       res.status(500).send('Internal Server Error')

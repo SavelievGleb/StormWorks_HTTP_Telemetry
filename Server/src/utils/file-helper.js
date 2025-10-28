@@ -6,6 +6,7 @@ class FileHelper {
     this._dirname = dirname
     this._port = port
     this._filePath = null
+    this._writeQueue = Promise.resolve()
   }
 
   getFilePath() {
@@ -31,25 +32,27 @@ class FileHelper {
   }
 
   async appendToFile(content, filePath = null, options = { encoding: 'utf-8' }) {
-    const targetPath = filePath || this.getFilePath()
-    try {
-      await fs.appendFile(targetPath, content, options)
-      return true
-    } catch (appendError) {
-      if (appendError.code === 'ENOENT') {
-        try {
-          const dir = path.dirname(targetPath)
-          await fs.mkdir(dir, { recursive: true })
-
-          await fs.writeFile(targetPath, content, options)
-          return true
-        } catch (createError) {
-          return false
+    this._writeQueue = this._writeQueue.then(async () => {
+      const targetPath = filePath || this.getFilePath()
+      try {
+        await fs.appendFile(targetPath, content, options)
+        return true
+      } catch (appendError) {
+        if (appendError.code === 'ENOENT') {
+          try {
+            const dir = path.dirname(targetPath)
+            await fs.mkdir(dir, { recursive: true })
+            await fs.writeFile(targetPath, content, options)
+            return true
+          } catch (createError) {
+            return false
+          }
         }
+        console.log(`Failed to append to file "${targetPath}":`, appendError.message)
+        return false
       }
-      console.log(`Failed to append to file "${targetPath}":`, appendError.message)
-      return false
-    }
+    })
+    return this._writeQueue
   }
 }
 
