@@ -4,11 +4,14 @@ const express = require("express")
 const app = express()
 const path = require('path')
 
-const FileHelper = require('./utils/file-helper')
-const fh = new FileHelper(path.dirname(__dirname), port)
-
 const Monitor = require('./utils/monitor')
 const monitor = new Monitor()
+
+const FileHelper = require('./utils/file-helper')
+const fileHelper = new FileHelper(monitor, path.dirname(__dirname), port)
+
+const RequestProcessor = require('./utils/request-processor')
+const requestProcessor = new RequestProcessor(fileHelper)
 
 async function startServer() {
   app.get('/', function (req, res) {
@@ -23,18 +26,17 @@ async function startServer() {
   app.get('/write', async function (req, res) {
     try {
       const queryParams = req.query
-      const frame = Object.values(queryParams)
-        .map(value => value.replace('.', ','))
-        .join('\t')
 
-      const success = await fh.appendToFile(frame + '\n')
-
-      if (success) {
-        monitor.recordRequest()
-        res.status(200).send()
-      } else {
-        res.status(500).send('Failed to write to file')
+      const frameID = queryParams.frameID
+      if (!frameID) {
+        res.status(400).send('Missing frameID')
+        return
       }
+
+      requestProcessor.requestProcessing(queryParams)
+
+      monitor.recordRequest()
+      res.status(200).send()
     } catch (err) {
       console.log(err)
       res.status(500).send('Internal Server Error')
@@ -43,7 +45,8 @@ async function startServer() {
 
   app.get('/new', function (req, res) {
     try {
-      fh._filePath = null
+      fileHelper.filePath = null
+      requestProcessor.reset()
       monitor.reset()
       res.status(200).send()
     } catch (err) {

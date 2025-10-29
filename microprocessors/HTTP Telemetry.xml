@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<microprocessor name="HTTP Telemetry" description="No description set." width="2" length="1" id_counter="119" id_counter_node="2" sym6="9290" sym7="9290" sym8="58446" sym9="42058" sym10="61162">
+<microprocessor name="HTTP Telemetry" description="No description set." width="2" length="1" id_counter="121" id_counter_node="2" sym6="9290" sym7="9290" sym8="58446" sym9="42058" sym10="61162">
 	<nodes>
 		<n id="1" component_id="2">
 			<node label="Data" mode="1" type="5" description="The input signal to be processed."/>
@@ -24,14 +24,18 @@ frequency = math.max(0, math.floor(60 / (pn('Data collect frequency') or 1) + 0.
 port = 8080
 labelName = 'Channel'
 
-httpReady = true
+pendingRequestsMax = 4
+pendingRequests = 0
 new = false
 
 tickCounter = 0
 data = {}
+frameId = 1
 
 function readLabels()
     local frame = {}
+    table.insert(frame, frameId)
+    frameId = frameId + 1
     for i = 1, 32, 1 do
         local label = pt(labelName .. ' ' .. i) or ''
         if label ~= '' then
@@ -44,6 +48,8 @@ end
 
 function readFrame()
     local frame = {}
+    table.insert(frame, frameId)
+    frameId = frameId + 1
     for i = 1, 32, 1 do
         if (pt(labelName .. ' ' .. i) or '') ~= '' then
             table.insert(frame, gn(i))
@@ -53,11 +59,14 @@ function readFrame()
 end
 
 function sendFrame(frame)
-    if #frame &gt; 0 and httpReady then
-        httpReady = false
-        local req = '/write?'
-        for i, v in ipairs(frame) do
-            req = req .. 'p' .. i .. '=' .. v .. '&amp;'
+    if #frame &lt; 1 then
+        return true
+    end
+    if pendingRequests &lt; pendingRequestsMax then
+        pendingRequests = pendingRequests + 1
+        local req = '/write?frameID=' .. frame[1] .. '&amp;'
+        for i = 2, #frame do
+            req = req .. 'p' .. (i - 1) .. '=' .. frame[i] .. '&amp;'
         end
         req = string.sub(req, 1, #req - 1)
         async.httpGet(port, req)
@@ -67,8 +76,8 @@ function sendFrame(frame)
 end
 
 function newFile()
-    if httpReady then
-        httpReady = false
+    if pendingRequests &lt; pendingRequestsMax then
+        pendingRequests = pendingRequests + 1
         local req = '/new'
         async.httpGet(port, req)
         return true
@@ -78,7 +87,7 @@ end
 
 function onTick()
     if gb(1) then
-        if #data == 0 then
+        if #data + pendingRequests == 0 then
             if not new then
                 if newFile() then
                     new = true
@@ -95,6 +104,7 @@ function onTick()
     else
         labelSend = false
         new = false
+        frameId = 1
     end
     if #data &gt; 0 then
         if (sendFrame(data[1])) then
@@ -102,11 +112,11 @@ function onTick()
         end
     end
 
-    sn(1, #data)
+    sn(1, #data + pendingRequests)
 end
 
 function httpReply(port, request_body, response_body)
-    httpReady = true
+    pendingRequests = math.max(pendingRequests - 1, 0)
 end
 ">
 					<pos x="4.5" y="-0.75"/>
@@ -114,7 +124,7 @@ end
 				</object>
 			</c>
 			<c type="20">
-				<object id="43" name="Data collect frequency" i="2">
+				<object id="43" name="Data collect frequency" i="1">
 					<pos x="4.5" y="-1.75"/>
 					<items>
 						<i l="60 hz">
@@ -391,14 +401,18 @@ frequency = math.max(0, math.floor(60 / (pn('Data collect frequency') or 1) + 0.
 port = 8080
 labelName = 'Channel'
 
-httpReady = true
+pendingRequestsMax = 4
+pendingRequests = 0
 new = false
 
 tickCounter = 0
 data = {}
+frameId = 1
 
 function readLabels()
     local frame = {}
+    table.insert(frame, frameId)
+    frameId = frameId + 1
     for i = 1, 32, 1 do
         local label = pt(labelName .. ' ' .. i) or ''
         if label ~= '' then
@@ -411,6 +425,8 @@ end
 
 function readFrame()
     local frame = {}
+    table.insert(frame, frameId)
+    frameId = frameId + 1
     for i = 1, 32, 1 do
         if (pt(labelName .. ' ' .. i) or '') ~= '' then
             table.insert(frame, gn(i))
@@ -420,11 +436,14 @@ function readFrame()
 end
 
 function sendFrame(frame)
-    if #frame &gt; 0 and httpReady then
-        httpReady = false
-        local req = '/write?'
-        for i, v in ipairs(frame) do
-            req = req .. 'p' .. i .. '=' .. v .. '&amp;'
+    if #frame &lt; 1 then
+        return true
+    end
+    if pendingRequests &lt; pendingRequestsMax then
+        pendingRequests = pendingRequests + 1
+        local req = '/write?frameID=' .. frame[1] .. '&amp;'
+        for i = 2, #frame do
+            req = req .. 'p' .. (i - 1) .. '=' .. frame[i] .. '&amp;'
         end
         req = string.sub(req, 1, #req - 1)
         async.httpGet(port, req)
@@ -434,8 +453,8 @@ function sendFrame(frame)
 end
 
 function newFile()
-    if httpReady then
-        httpReady = false
+    if pendingRequests &lt; pendingRequestsMax then
+        pendingRequests = pendingRequests + 1
         local req = '/new'
         async.httpGet(port, req)
         return true
@@ -445,7 +464,7 @@ end
 
 function onTick()
     if gb(1) then
-        if #data == 0 then
+        if #data + pendingRequests == 0 then
             if not new then
                 if newFile() then
                     new = true
@@ -462,6 +481,7 @@ function onTick()
     else
         labelSend = false
         new = false
+        frameId = 1
     end
     if #data &gt; 0 then
         if (sendFrame(data[1])) then
@@ -469,17 +489,17 @@ function onTick()
         end
     end
 
-    sn(1, #data)
+    sn(1, #data + pendingRequests)
 end
 
 function httpReply(port, request_body, response_body)
-    httpReady = true
+    pendingRequests = math.max(pendingRequests - 1, 0)
 end
 ">
 				<pos x="4.5" y="-0.75"/>
 				<in1 component_id="81"/>
 			</c0>
-			<c1 id="43" name="Data collect frequency" i="2">
+			<c1 id="43" name="Data collect frequency" i="1">
 				<pos x="4.5" y="-1.75"/>
 				<items>
 					<i l="60 hz">

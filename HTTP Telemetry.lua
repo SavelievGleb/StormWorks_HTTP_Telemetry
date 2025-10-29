@@ -5,14 +5,18 @@ frequency = math.max(0, math.floor(60 / (pn('Data collect frequency') or 1) + 0.
 port = 8080
 labelName = 'Channel'
 
-httpReady = true
+pendingRequestsMax = 4
+pendingRequests = 0
 new = false
 
 tickCounter = 0
 data = {}
+frameId = 1
 
 function readLabels()
     local frame = {}
+    table.insert(frame, frameId)
+    frameId = frameId + 1
     for i = 1, 32, 1 do
         local label = pt(labelName .. ' ' .. i) or ''
         if label ~= '' then
@@ -25,6 +29,8 @@ end
 
 function readFrame()
     local frame = {}
+    table.insert(frame, frameId)
+    frameId = frameId + 1
     for i = 1, 32, 1 do
         if (pt(labelName .. ' ' .. i) or '') ~= '' then
             table.insert(frame, gn(i))
@@ -34,11 +40,14 @@ function readFrame()
 end
 
 function sendFrame(frame)
-    if #frame > 0 and httpReady then
-        httpReady = false
-        local req = '/write?'
-        for i, v in ipairs(frame) do
-            req = req .. 'p' .. i .. '=' .. v .. '&'
+    if #frame < 1 then
+        return true
+    end
+    if pendingRequests < pendingRequestsMax then
+        pendingRequests = pendingRequests + 1
+        local req = '/write?frameID=' .. frame[1] .. '&'
+        for i = 2, #frame do
+            req = req .. 'p' .. (i - 1) .. '=' .. frame[i] .. '&'
         end
         req = string.sub(req, 1, #req - 1)
         async.httpGet(port, req)
@@ -48,8 +57,8 @@ function sendFrame(frame)
 end
 
 function newFile()
-    if httpReady then
-        httpReady = false
+    if pendingRequests < pendingRequestsMax then
+        pendingRequests = pendingRequests + 1
         local req = '/new'
         async.httpGet(port, req)
         return true
@@ -59,7 +68,7 @@ end
 
 function onTick()
     if gb(1) then
-        if #data == 0 then
+        if #data + pendingRequests == 0 then
             if not new then
                 if newFile() then
                     new = true
@@ -76,6 +85,7 @@ function onTick()
     else
         labelSend = false
         new = false
+        frameId = 1
     end
     if #data > 0 then
         if (sendFrame(data[1])) then
@@ -83,9 +93,9 @@ function onTick()
         end
     end
 
-    sn(1, #data)
+    sn(1, #data + pendingRequests)
 end
 
 function httpReply(port, request_body, response_body)
-    httpReady = true
+    pendingRequests = math.max(pendingRequests - 1, 0)
 end
