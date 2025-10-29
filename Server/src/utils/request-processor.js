@@ -48,6 +48,13 @@ class RequestProcessor {
                     break
                 }
             }
+            else if (this.buffer.size > this.maxBufferSize) {
+                wroteSomething = true
+                const oldFrameId = this.expectedFrameId
+                this.expectedFrameId = Math.min(...this.buffer.keys())
+                const newFrameId = this.expectedFrameId
+                console.log(`\rFrame processor buffer overflow. Skip frames from ${oldFrameId} to ${newFrameId}`)
+            }
         }
     }
 }
