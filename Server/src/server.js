@@ -9,6 +9,10 @@ const monitor = new Monitor()
 
 const FileHelper = require('./utils/file-helper')
 const fileHelper = new FileHelper(monitor, path.dirname(__dirname), port)
+
+const RequestProcessor = require('./utils/request-processor')
+const requestProcessor = new RequestProcessor(fileHelper)
+
 async function startServer() {
   app.get('/', function (req, res) {
     try {
@@ -29,12 +33,7 @@ async function startServer() {
         return
       }
 
-      const frame = Object.entries(queryParams)
-        .filter(([key]) => /^p\d+$/.test(key))
-        .map(entry => entry[1].toString().replace('.', ','))
-        .join('\t')
-
-      fileHelper.appendToFile(frame + '\n')
+      requestProcessor.requestProcessing(queryParams)
 
       monitor.recordRequest()
       res.status(200).send()
@@ -47,6 +46,7 @@ async function startServer() {
   app.get('/new', function (req, res) {
     try {
       fileHelper.filePath = null
+      requestProcessor.reset()
       monitor.reset()
       res.status(200).send()
     } catch (err) {
