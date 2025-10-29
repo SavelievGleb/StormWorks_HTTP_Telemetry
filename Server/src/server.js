@@ -4,12 +4,11 @@ const express = require("express")
 const app = express()
 const path = require('path')
 
-const FileHelper = require('./utils/file-helper')
-const fh = new FileHelper(path.dirname(__dirname), port)
-
 const Monitor = require('./utils/monitor')
 const monitor = new Monitor()
 
+const FileHelper = require('./utils/file-helper')
+const fileHelper = new FileHelper(monitor, path.dirname(__dirname), port)
 async function startServer() {
   app.get('/', function (req, res) {
     try {
@@ -35,7 +34,7 @@ async function startServer() {
         .map(entry => entry[1].toString().replace('.', ','))
         .join('\t')
 
-      fh.appendToFile(frame + '\n')
+      fileHelper.appendToFile(frame + '\n')
 
       monitor.recordRequest()
       res.status(200).send()
@@ -47,7 +46,7 @@ async function startServer() {
 
   app.get('/new', function (req, res) {
     try {
-      fh._filePath = null
+      fileHelper.filePath = null
       monitor.reset()
       res.status(200).send()
     } catch (err) {

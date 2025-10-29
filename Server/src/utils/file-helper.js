@@ -2,22 +2,23 @@ const fs = require('fs').promises
 const path = require('path')
 
 class FileHelper {
-  constructor(dirname, port = 8080) {
-    this._dirname = dirname
-    this._port = port
-    this._filePath = null
-    this._writeQueue = Promise.resolve()
+  constructor(monitor, dirname, port = 8080) {
+    this.monitor = monitor
+    this.dirname = dirname
+    this.port = port
+    this.filePath = null
+    this.writeQueue = Promise.resolve()
   }
 
   getFilePath() {
-    if (this._filePath == null) {
+    if (this.filePath == null) {
       this.createFilePath()
     }
-    return this._filePath
+    return this.filePath
   }
 
   createFilePath() {
-    this._filePath = path.join(this._dirname, 'data', `${this.getTimestamp()} (${this._port}).txt`)
+    this.filePath = path.join(this.dirname, 'data', `${this.getTimestamp()} (${this.port}).txt`)
   }
 
   getTimestamp() {
@@ -32,10 +33,11 @@ class FileHelper {
   }
 
   async appendToFile(content, filePath = null, options = { encoding: 'utf-8' }) {
-    this._writeQueue = this._writeQueue.then(async () => {
+    this.writeQueue = this.writeQueue.then(async () => {
       const targetPath = filePath || this.getFilePath()
       try {
         await fs.appendFile(targetPath, content, options)
+        this.monitor.recordWrite()
         return true
       } catch (appendError) {
         if (appendError.code === 'ENOENT') {
@@ -43,6 +45,7 @@ class FileHelper {
             const dir = path.dirname(targetPath)
             await fs.mkdir(dir, { recursive: true })
             await fs.writeFile(targetPath, content, options)
+            this.monitor.recordWrite()
             return true
           } catch (createError) {
             return false
@@ -52,7 +55,7 @@ class FileHelper {
         return false
       }
     })
-    return this._writeQueue
+    return this.writeQueue
   }
 }
 
