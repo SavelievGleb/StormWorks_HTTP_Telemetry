@@ -11,7 +11,7 @@ const FileHelper = require('./utils/file-helper')
 const fileHelper = new FileHelper(monitor, path.dirname(__dirname), port)
 
 const RequestProcessor = require('./utils/request-processor')
-const requestProcessor = new RequestProcessor(fileHelper)
+const requestProcessor = new RequestProcessor(fileHelper, monitor)
 
 async function startServer() {
   app.get('/', function (req, res) {
@@ -27,9 +27,8 @@ async function startServer() {
     try {
       const queryParams = req.query
 
-      const frameID = queryParams.frameID
-      if (!frameID) {
-        res.status(400).send('Missing frameID')
+      if (!queryParams.frames) {
+        res.status(400).send('Bad Request')
         return
       }
 

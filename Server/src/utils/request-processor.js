@@ -1,8 +1,9 @@
 const FileHelper = require('./file-helper')
 
 class RequestProcessor {
-    constructor(fileHelper, options = {}) {
+    constructor(fileHelper, monitor, options = {}) {
         this.fileHelper = fileHelper
+        this.monitor = monitor
         this.buffer = new Map()
         this.requestProcessingQueue = Promise.resolve()
         this.expectedFrameId = 1
@@ -12,12 +13,15 @@ class RequestProcessor {
     async requestProcessing(queryParams) {
         this.requestProcessingQueue = this.requestProcessingQueue.then(async () => {
             try {
-                const frameID = queryParams.frameID
-                const frame = Object.entries(queryParams)
-                    .filter(([key]) => /^p\d+$/.test(key))
-                    .sort(([a], [b]) => parseInt(a.slice(1)) - parseInt(b.slice(1)))
-                    .map(entry => entry[1].toString().replace('.', ','))
-                this.buffer.set(parseInt(frameID), frame)
+                const frames = JSON.parse(queryParams.frames)
+                for (const frame of frames) {
+                    const frameID = parseInt(frame.frameID)
+                    const parameters = Object.entries(frame)
+                        .filter(([key]) => /^p\d+$/.test(key))
+                        .map(entry => entry[1].toString().replace('.', ','))
+                    this.buffer.set(frameID, parameters)
+                    this.monitor.recordFrame()
+                }
                 await this.writeData()
                 return true
             } catch {
