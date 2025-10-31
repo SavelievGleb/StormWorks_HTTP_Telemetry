@@ -25,14 +25,15 @@ Created to make life easier for creators by providing simple and reliable access
 
 **Lua** in StormWorks allows sending *http get requests to localhost*, which the program will accept, parse, and save to a text file.
 
-Naturally, there are some limitations - the data transfer speed depends on the game and your hardware. This problem is partially solvable - the controller saves data to an internal buffer and sends it when possible. Also, the highly flexible data collection frequency settings allow you to tailor the controller to a specific task.
+The highly flexible data collection frequency settings allow you to tailor the controller to a specific task. In rare cases, a reduced data transmission rate might occur, which is managed by the microcontroller's data buffer.
 
-| Collection Frequency | Informativeness | Collection/Sending | Recommended Use Case |
-|:---:|:---|:---|:---|
-| **60 Hz** | 🟢 Maximum informativeness. Every tick is saved | 🔴 Collection is much faster than sending. After stopping collection, you will have to wait a long time for sending to finish | Short data collection sessions. For data that changes very abruptly. Ideal for tuning missiles/radar filters |
-| **30 - 10 Hz** | 🟡 Decent informativeness. Data loss is insignificant | 🟡 Collection is slightly faster than sending. Short wait after stopping collection | Short to medium data collection sessions. Great for tuning 90% of vehicles |
-| **6 - 1 Hz** | 🟠 Low informativeness. More data missed than collected | 🟢 Collection is slightly slower than sending. Data doesn't accumulate | For inert data, such as fuel consumption or engine heating graphs |
-| **0.5 - 0.1 Hz** | 🔴 Poor informativeness. Don't even bother | 🟢 Collection is much slower than sending | Minimal load. Specifically created for logging background data |
+| Collection Frequency | Informativeness | Recommendations |
+|:---:|:---|:---|
+| **60 Hz** | 🟢 Maximum informativeness. Saves every tick. | For data that changes very abruptly. Ideal for tuning missiles/radar filters. |
+| **30 Hz** | 🟡 Decent informativeness. Saves every second data tick. | Suitable for tuning inertial systems. |
+| **20 Hz** | 🟠 Below average informativeness. Saves every third data tick. | For highly inertial data, such as fuel consumption or engine heat-up graphs. |
+| **< 20 Hz** | 🔴 Poor informativeness. | Not sure why you'd use this, but it's here anyway. |
+| **0.5 - 0.1 Hz** | 🟤 Absurdly low informativeness. | Specifically created for logging background data. |
 
 **I recommend selecting the frequency based on your specific task and performance*
 

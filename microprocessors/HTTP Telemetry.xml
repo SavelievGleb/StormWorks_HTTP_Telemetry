@@ -17,12 +17,12 @@
 		</data>
 		<components>
 			<c type="56">
-				<object id="6" script="gn, gb, sn, sb, pn, pb, pt = input.getNumber, input.getBool, output.setNumber, output.setBool, property.getNumber, property.getBool, property.getText
+				<object id="6" script='gn, gb, sn, sb, pn, pb, pt = input.getNumber, input.getBool, output.setNumber, output.setBool, property.getNumber, property.getBool, property.getText
 pi, pi2, sin, cos, sqrt, atan, abs = math.pi, math.pi * 2, math.sin, math.cos, math.sqrt, math.atan, math.abs
 
-frequency = math.max(0, math.floor(60 / (pn('Data collect frequency') or 1) + 0.5) - 1)
+frequency = math.max(0, math.floor(60 / (pn(&apos;Data collect frequency&apos;) or 1) + 0.5) - 1)
 port = 8080
-labelName = 'Channel'
+labelName = &apos;Channel&apos;
 
 pendingRequestsMax = 4
 pendingRequests = 0
@@ -37,9 +37,10 @@ function readLabels()
     table.insert(frame, frameId)
     frameId = frameId + 1
     for i = 1, 32, 1 do
-        local label = pt(labelName .. ' ' .. i) or ''
-        if label ~= '' then
-            label = label:gsub(' ', '_')
+        local label = pt(labelName .. &apos; &apos; .. i) or &apos;&apos;
+        if label ~= &apos;&apos; then
+            label = label:gsub(&apos; &apos;, &apos;_&apos;)
+            label = &apos;"&apos; .. label .. &apos;"&apos;
             table.insert(frame, label)
         end
     end
@@ -51,34 +52,41 @@ function readFrame()
     table.insert(frame, frameId)
     frameId = frameId + 1
     for i = 1, 32, 1 do
-        if (pt(labelName .. ' ' .. i) or '') ~= '' then
+        if (pt(labelName .. &apos; &apos; .. i) or &apos;&apos;) ~= &apos;&apos; then
             table.insert(frame, gn(i))
         end
     end
     return frame
 end
 
-function sendFrame(frame)
-    if #frame &lt; 1 then
-        return true
+function sendData()
+    if #data &lt; 1 then
+        return
     end
     if pendingRequests &lt; pendingRequestsMax then
         pendingRequests = pendingRequests + 1
-        local req = '/write?frameID=' .. frame[1] .. '&amp;'
-        for i = 2, #frame do
-            req = req .. 'p' .. (i - 1) .. '=' .. frame[i] .. '&amp;'
+        local req = &apos;/write?frames=[&apos;
+        while #req &lt; 1500 and #data &gt; 0 do
+            local frame = data[1]
+            local json = &apos;{"frameID":&apos; .. frame[1] .. &apos;,&apos;
+            for i = 2, #frame do
+                json = json .. &apos;"p&apos; .. (i - 1) .. &apos;":&apos; .. frame[i] .. &apos;,&apos;
+            end
+            json = string.sub(json, 1, #json - 1)
+            json = json .. &apos;},&apos;
+            req = req .. json
+            table.remove(data, 1)
         end
         req = string.sub(req, 1, #req - 1)
+        req = req .. &apos;]&apos;
         async.httpGet(port, req)
-        return true
     end
-    return false
 end
 
 function newFile()
     if pendingRequests &lt; pendingRequestsMax then
         pendingRequests = pendingRequests + 1
-        local req = '/new'
+        local req = &apos;/new&apos;
         async.httpGet(port, req)
         return true
     end
@@ -106,11 +114,7 @@ function onTick()
         new = false
         frameId = 1
     end
-    if #data &gt; 0 then
-        if (sendFrame(data[1])) then
-            table.remove(data, 1)
-        end
-    end
+    sendData()
 
     sn(1, #data + pendingRequests)
 end
@@ -118,13 +122,13 @@ end
 function httpReply(port, request_body, response_body)
     pendingRequests = math.max(pendingRequests - 1, 0)
 end
-">
+'>
 					<pos x="4.5" y="-0.75"/>
 					<in1 component_id="81"/>
 				</object>
 			</c>
 			<c type="20">
-				<object id="43" name="Data collect frequency" i="1">
+				<object id="43" name="Data collect frequency">
 					<pos x="4.5" y="-1.75"/>
 					<items>
 						<i l="60 hz">
@@ -394,12 +398,12 @@ end
 		</components_bridge>
 		<groups/>
 		<component_states>
-			<c0 id="6" script="gn, gb, sn, sb, pn, pb, pt = input.getNumber, input.getBool, output.setNumber, output.setBool, property.getNumber, property.getBool, property.getText
+			<c0 id="6" script='gn, gb, sn, sb, pn, pb, pt = input.getNumber, input.getBool, output.setNumber, output.setBool, property.getNumber, property.getBool, property.getText
 pi, pi2, sin, cos, sqrt, atan, abs = math.pi, math.pi * 2, math.sin, math.cos, math.sqrt, math.atan, math.abs
 
-frequency = math.max(0, math.floor(60 / (pn('Data collect frequency') or 1) + 0.5) - 1)
+frequency = math.max(0, math.floor(60 / (pn(&apos;Data collect frequency&apos;) or 1) + 0.5) - 1)
 port = 8080
-labelName = 'Channel'
+labelName = &apos;Channel&apos;
 
 pendingRequestsMax = 4
 pendingRequests = 0
@@ -414,9 +418,10 @@ function readLabels()
     table.insert(frame, frameId)
     frameId = frameId + 1
     for i = 1, 32, 1 do
-        local label = pt(labelName .. ' ' .. i) or ''
-        if label ~= '' then
-            label = label:gsub(' ', '_')
+        local label = pt(labelName .. &apos; &apos; .. i) or &apos;&apos;
+        if label ~= &apos;&apos; then
+            label = label:gsub(&apos; &apos;, &apos;_&apos;)
+            label = &apos;"&apos; .. label .. &apos;"&apos;
             table.insert(frame, label)
         end
     end
@@ -428,34 +433,41 @@ function readFrame()
     table.insert(frame, frameId)
     frameId = frameId + 1
     for i = 1, 32, 1 do
-        if (pt(labelName .. ' ' .. i) or '') ~= '' then
+        if (pt(labelName .. &apos; &apos; .. i) or &apos;&apos;) ~= &apos;&apos; then
             table.insert(frame, gn(i))
         end
     end
     return frame
 end
 
-function sendFrame(frame)
-    if #frame &lt; 1 then
-        return true
+function sendData()
+    if #data &lt; 1 then
+        return
     end
     if pendingRequests &lt; pendingRequestsMax then
         pendingRequests = pendingRequests + 1
-        local req = '/write?frameID=' .. frame[1] .. '&amp;'
-        for i = 2, #frame do
-            req = req .. 'p' .. (i - 1) .. '=' .. frame[i] .. '&amp;'
+        local req = &apos;/write?frames=[&apos;
+        while #req &lt; 1500 and #data &gt; 0 do
+            local frame = data[1]
+            local json = &apos;{"frameID":&apos; .. frame[1] .. &apos;,&apos;
+            for i = 2, #frame do
+                json = json .. &apos;"p&apos; .. (i - 1) .. &apos;":&apos; .. frame[i] .. &apos;,&apos;
+            end
+            json = string.sub(json, 1, #json - 1)
+            json = json .. &apos;},&apos;
+            req = req .. json
+            table.remove(data, 1)
         end
         req = string.sub(req, 1, #req - 1)
+        req = req .. &apos;]&apos;
         async.httpGet(port, req)
-        return true
     end
-    return false
 end
 
 function newFile()
     if pendingRequests &lt; pendingRequestsMax then
         pendingRequests = pendingRequests + 1
-        local req = '/new'
+        local req = &apos;/new&apos;
         async.httpGet(port, req)
         return true
     end
@@ -483,11 +495,7 @@ function onTick()
         new = false
         frameId = 1
     end
-    if #data &gt; 0 then
-        if (sendFrame(data[1])) then
-            table.remove(data, 1)
-        end
-    end
+    sendData()
 
     sn(1, #data + pendingRequests)
 end
@@ -495,11 +503,11 @@ end
 function httpReply(port, request_body, response_body)
     pendingRequests = math.max(pendingRequests - 1, 0)
 end
-">
+'>
 				<pos x="4.5" y="-0.75"/>
 				<in1 component_id="81"/>
 			</c0>
-			<c1 id="43" name="Data collect frequency" i="1">
+			<c1 id="43" name="Data collect frequency">
 				<pos x="4.5" y="-1.75"/>
 				<items>
 					<i l="60 hz">

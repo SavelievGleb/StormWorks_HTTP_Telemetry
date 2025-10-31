@@ -21,6 +21,7 @@ function readLabels()
         local label = pt(labelName .. ' ' .. i) or ''
         if label ~= '' then
             label = label:gsub(' ', '_')
+            label = '"' .. label .. '"'
             table.insert(frame, label)
         end
     end
@@ -39,21 +40,28 @@ function readFrame()
     return frame
 end
 
-function sendFrame(frame)
-    if #frame < 1 then
-        return true
+function sendData()
+    if #data < 1 then
+        return
     end
     if pendingRequests < pendingRequestsMax then
         pendingRequests = pendingRequests + 1
-        local req = '/write?frameID=' .. frame[1] .. '&'
-        for i = 2, #frame do
-            req = req .. 'p' .. (i - 1) .. '=' .. frame[i] .. '&'
+        local req = '/write?frames=['
+        while #req < 1500 and #data > 0 do
+            local frame = data[1]
+            local json = '{"frameID":' .. frame[1] .. ','
+            for i = 2, #frame do
+                json = json .. '"p' .. (i - 1) .. '":' .. frame[i] .. ','
+            end
+            json = string.sub(json, 1, #json - 1)
+            json = json .. '},'
+            req = req .. json
+            table.remove(data, 1)
         end
         req = string.sub(req, 1, #req - 1)
+        req = req .. ']'
         async.httpGet(port, req)
-        return true
     end
-    return false
 end
 
 function newFile()
@@ -87,11 +95,7 @@ function onTick()
         new = false
         frameId = 1
     end
-    if #data > 0 then
-        if (sendFrame(data[1])) then
-            table.remove(data, 1)
-        end
-    end
+    sendData()
 
     sn(1, #data + pendingRequests)
 end
