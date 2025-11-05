@@ -1,8 +1,6 @@
-const FileHelper = require('./file-helper')
-
 class RequestProcessor {
-    constructor(fileHelper, monitor, options = {}) {
-        this.fileHelper = fileHelper
+    constructor(dataWriter, monitor, options = {}) {
+        this.dataWriter = dataWriter
         this.monitor = monitor
         this.buffer = new Map()
         this.requestProcessingQueue = Promise.resolve()
@@ -44,7 +42,7 @@ class RequestProcessor {
             if (this.buffer.has(this.expectedFrameId)) {
                 const data = this.buffer.get(this.expectedFrameId)
                 try {
-                    await this.fileHelper.appendToFile(data.join('\t') + '\n')
+                    await this.dataWriter.appendToFile(data.join('\t') + '\n')
                     this.buffer.delete(this.expectedFrameId)
                     this.expectedFrameId++
                     wroteSomething = true

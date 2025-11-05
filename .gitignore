@@ -1,4 +1,3 @@
 *.vscode/
-Server/node_modules/
-Server/package-lock.json
-Server/data/
+*/node_modules/
+*/package-lock.json

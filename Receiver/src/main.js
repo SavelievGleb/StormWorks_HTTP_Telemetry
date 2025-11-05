@@ -1,20 +1,20 @@
 const port = 8080
 
 const express = require("express")
-const app = express()
+const server = express()
 const path = require('path')
 
 const Monitor = require('./utils/monitor')
 const monitor = new Monitor()
 
-const FileHelper = require('./utils/file-helper')
-const fileHelper = new FileHelper(monitor, path.dirname(__dirname), port)
+const DataWriter = require('./utils/data-writer')
+const dataWriter = new DataWriter(monitor, path.dirname(__dirname), port)
 
 const RequestProcessor = require('./utils/request-processor')
-const requestProcessor = new RequestProcessor(fileHelper, monitor)
+const requestProcessor = new RequestProcessor(dataWriter, monitor)
 
 async function startServer() {
-  app.get('/', function (req, res) {
+  server.get('/', function (req, res) {
     try {
       res.status(200).send()
     } catch (err) {
@@ -23,7 +23,7 @@ async function startServer() {
     }
   })
 
-  app.get('/write', async function (req, res) {
+  server.get('/write', async function (req, res) {
     try {
       const queryParams = req.query
 
@@ -42,9 +42,9 @@ async function startServer() {
     }
   })
 
-  app.get('/new', function (req, res) {
+  server.get('/new', function (req, res) {
     try {
-      fileHelper.filePath = null
+      dataWriter.filePath = null
       requestProcessor.reset()
       monitor.reset()
       res.status(200).send()
@@ -54,7 +54,7 @@ async function startServer() {
     }
   })
 
-  app.listen(port, '127.0.0.1', () => {
+  server.listen(port, '127.0.0.1', () => {
     console.log(`Server started on 127.0.0.1:${port}`)
   })
 

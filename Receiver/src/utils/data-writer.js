@@ -1,7 +1,7 @@
 const fs = require('fs').promises
 const path = require('path')
 
-class FileHelper {
+class DataWriter {
   constructor(monitor, dirname, port = 8080) {
     this.monitor = monitor
     this.dirname = dirname
@@ -59,4 +59,4 @@ class FileHelper {
   }
 }
 
-module.exports = FileHelper
+module.exports = DataWriter
