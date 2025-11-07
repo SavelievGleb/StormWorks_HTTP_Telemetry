@@ -13,7 +13,8 @@
   "dependencies": {
     "express": "^5.1.0",
     "fs": "^0.0.1-security",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "plotly.js-dist-min": "^2.35.2"
   },
   "devDependencies": {
     "electron": "^39.1.0",
