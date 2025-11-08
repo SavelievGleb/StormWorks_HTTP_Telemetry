@@ -36,9 +36,17 @@ const defaultConfig = {
   modeBarButtonsToRemove: ['zoom', 'pan', 'select', 'lasso', 'resetScale', 'toImage']
 }
 
+let animationFrameId = null
+
+let chartXwidth = 600
+let chartXrange = [-chartXwidth, 0]
+
+let lastFrameId = 0
+
 document.addEventListener('DOMContentLoaded', function () {
   Plotly.newPlot('chart', [], defaultLayout, defaultConfig)
-  Plotly.relayout('chart', { 'xaxis.range': [0, 600] })
+  Plotly.relayout('chart', { 'xaxis.range': [0, chartXwidth] })
+  attachChartEvents()
 })
 
 window.electronAPI.onMonitorUpdate((event, data) => {
@@ -58,6 +66,7 @@ window.electronAPI.onNewData((event, chartData) => {
   for (const [frameId, parameters] of chartData) {
     if (frameId === 1) {
       Plotly.newPlot('chart', [], defaultLayout, defaultConfig)
+      attachChartEvents()
       for (let i = 0; i < parameters.length; i++) {
         Plotly.addTraces('chart', {
           type: 'scatter',
@@ -77,6 +86,7 @@ window.electronAPI.onNewData((event, chartData) => {
         buffer[i].x.push(frameId - 2)
         buffer[i].y.push(parameters[i])
       }
+      lastFrameId = frameId - 2
     }
   }
   if (Object.keys(buffer).length > 0) {
@@ -87,4 +97,48 @@ window.electronAPI.onNewData((event, chartData) => {
     }
     Plotly.extendTraces('chart', updateData, traceIndices)
   }
+  smoothScrollChart()
 })
+
+function attachChartEvents() {
+  const chart = document.getElementById('chart')
+
+  chart.on('plotly_relayout', (eventData) => {
+    const xrange = eventData['xaxis.range'] || [eventData['xaxis.range[0]'], eventData['xaxis.range[1]']]
+    if (xrange[0] && xrange[1]) {
+      chartXrange = xrange
+      chartXwidth = xrange[1] - xrange[0]
+    }
+  })
+}
+
+function smoothScrollChart(duration = 1000) {
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId);
+  }
+  const chart = document.getElementById('chart')
+  const currentRange = chart.layout.xaxis.range
+  const startX1 = currentRange[1]
+  const startTime = performance.now()
+  function animate(currentTime) {
+    const elapsed = currentTime - startTime
+    const progress = Math.min(elapsed / duration, 1)
+    const actualRange = chart.layout.xaxis.range
+    const currentWidth = actualRange[1] - actualRange[0]
+    const targetX1 = lastFrameId
+    const newX1 = startX1 + (targetX1 - startX1) * progress
+    const newX0 = newX1 - currentWidth
+
+    Plotly.relayout('chart', {
+      'xaxis.range': [newX0, newX1]
+    })
+
+    if (progress < 1) {
+      animationFrameId = requestAnimationFrame(animate)
+    } else {
+      animationFrameId = null
+    }
+  }
+
+  animationFrameId = requestAnimationFrame(animate)
+}
