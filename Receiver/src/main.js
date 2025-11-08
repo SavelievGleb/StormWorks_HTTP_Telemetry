@@ -64,7 +64,10 @@ async function startServer() {
 
   setInterval(() => {
     if (window) {
-      window.webContents.send('monitor-update', monitor.update())
+      try {
+        window.webContents.send('monitor-update', monitor.update())
+        window.webContents.send('data-update', requestProcessor.getChartBuffer())
+      } catch { }
     }
   }, 1000)
 }
@@ -76,7 +79,9 @@ startServer().catch(error => {
 app.whenReady().then(() => {
   window = new BrowserWindow({
     width: 800,
+    minWidth: 600,
     height: 600,
+    minHeight: 400,
     icon: path.join(__dirname, 'renderer', 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')

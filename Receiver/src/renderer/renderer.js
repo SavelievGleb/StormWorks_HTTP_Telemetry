@@ -7,7 +7,6 @@ const defaultLayout = {
       visible: true,
       thickness: 0.1,
     },
-    // fixedrange: true,
   },
   yaxis: {
     color: '#cccccc',
@@ -37,59 +36,11 @@ const defaultConfig = {
   modeBarButtonsToRemove: ['zoom', 'pan', 'select', 'lasso', 'resetScale', 'toImage']
 }
 
-function generateSineSignal({
-  amplitude = 1.0,
-  frequency = 1.0,
-  duration = 1.0,
-  sampleRate = 44100,
-  phase = 0
-} = {}) {
-  const samples = Math.floor(duration * sampleRate);
-  const signal = new Float32Array(samples);
-  const angularFrequency = 2 * Math.PI * frequency;
-
-  for (let i = 0; i < samples; i++) {
-    const time = i / sampleRate;
-    signal[i] = amplitude * Math.sin(angularFrequency * time + phase);
-  }
-
-  return signal;
-}
-
-function createPlotData(
-  name,
-  params = {
-    amplitude = 1.0,
-    frequency = 1.0,
-    duration = 1.0,
-    sampleRate = 44100,
-    phase = 0
-  } = {}) {
-  let data = {
-    type: 'scatter',
-    name: name,
-    mode: 'lines',
-    x: [],
-    y: [],
-    hoverinfo: 'y',
-  }
-  const signal = generateSineSignal(params)
-  for (var i = 0; i < signal.length; i++) {
-    data.x[i] = i
-    data.y[i] = signal[i]
-  }
-  return data
-}
-
 document.addEventListener('DOMContentLoaded', function () {
   Plotly.newPlot('chart', [], defaultLayout, defaultConfig)
-
-  Plotly.addTraces('chart', [
-    createPlotData('sin 1', { sampleRate: 300, duration: 2, amplitude: 1, frequency: 1, phase: 0 }),
-  ]);
-
-  Plotly.update('chart')
+  Plotly.relayout('chart', { 'xaxis.range': [0, 600] })
 })
+
 window.electronAPI.onMonitorUpdate((event, data) => {
   document.getElementById('request-count').textContent = data.requestCount
   document.getElementById('request-frequency').textContent = data.requestFrequency
@@ -97,4 +48,43 @@ window.electronAPI.onMonitorUpdate((event, data) => {
   document.getElementById('processed-frames-count').textContent = data.frameCount
   document.getElementById('frame-frequency').textContent = data.frameFrequency
   document.getElementById('write-count').textContent = data.writeCount
+})
+
+window.electronAPI.onNewData((event, chartData) => {
+  if (!chartData || chartData.size === 0) {
+    return
+  }
+  const buffer = {}
+  for (const [frameId, parameters] of chartData) {
+    if (frameId === 1) {
+      Plotly.newPlot('chart', [], defaultLayout, defaultConfig)
+      for (let i = 0; i < parameters.length; i++) {
+        Plotly.addTraces('chart', {
+          type: 'scatter',
+          name: parameters[i],
+          mode: 'lines',
+          x: [],
+          y: [],
+          hoverinfo: 'y',
+        })
+      }
+    }
+    else {
+      for (let i = 0; i < parameters.length; i++) {
+        if (!buffer[i]) {
+          buffer[i] = { x: [], y: [] }
+        }
+        buffer[i].x.push(frameId - 2)
+        buffer[i].y.push(parameters[i])
+      }
+    }
+  }
+  if (Object.keys(buffer).length > 0) {
+    const traceIndices = Object.keys(buffer).map(Number)
+    const updateData = {
+      x: traceIndices.map(i => buffer[i].x),
+      y: traceIndices.map(i => buffer[i].y)
+    }
+    Plotly.extendTraces('chart', updateData, traceIndices)
+  }
 })

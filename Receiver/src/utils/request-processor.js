@@ -4,6 +4,7 @@ class RequestProcessor {
         this.monitor = monitor
         this.buffer = new Map()
         this.requestProcessingQueue = Promise.resolve()
+        this.chartBuffer = new Map()
         this.expectedFrameId = 1
         this.maxBufferSize = options.maxBufferSize || 180
     }
@@ -16,7 +17,7 @@ class RequestProcessor {
                     const frameID = parseInt(frame.frameID)
                     const parameters = Object.entries(frame)
                         .filter(([key]) => /^p\d+$/.test(key))
-                        .map(entry => entry[1].toString().replace('.', ','))
+                        .map(entry => entry[1])
                     this.buffer.set(frameID, parameters)
                     this.monitor.recordFrame()
                 }
@@ -42,7 +43,10 @@ class RequestProcessor {
             if (this.buffer.has(this.expectedFrameId)) {
                 const data = this.buffer.get(this.expectedFrameId)
                 try {
-                    await this.dataWriter.appendToFile(data.join('\t') + '\n')
+                    await this.dataWriter.appendToFile(Object.entries(data)
+                        .map(entry => entry[1].toString().replace('.', ','))
+                        .join('\t') + '\n')
+                    this.chartBuffer.set(this.expectedFrameId, data)
                     this.buffer.delete(this.expectedFrameId)
                     this.expectedFrameId++
                     wroteSomething = true
@@ -58,6 +62,12 @@ class RequestProcessor {
                 console.log(`\rFrame processor buffer overflow. Skip frames from ${oldFrameId} to ${newFrameId}`)
             }
         }
+    }
+
+    getChartBuffer() {
+        const buff = new Map(this.chartBuffer)
+        this.chartBuffer.clear()
+        return buff
     }
 }
 
