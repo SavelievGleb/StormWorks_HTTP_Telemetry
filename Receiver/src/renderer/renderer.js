@@ -12,3 +12,7 @@ window.electronAPI.onMonitorUpdate((event, data) => {
 window.electronAPI.onNewData((event, chartData) => {
   chartManager.AddData(chartData)
 })
+
+document.getElementById('loadFileButton').addEventListener('click', async () => {
+  window.electronAPI.openFile()
+})

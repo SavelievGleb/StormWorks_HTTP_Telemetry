@@ -1,16 +1,21 @@
 const port = 8080
 
 const os = require('os')
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const express = require("express")
 const server = express()
 const path = require('path')
+
+const filesPath = path.join(os.homedir(), 'Desktop', 'HTTP Telemetry data')
 
 const Monitor = require('./utils/monitor')
 const monitor = new Monitor()
 
 const DataWriter = require('./utils/data-writer')
-const dataWriter = new DataWriter(monitor, path.join(os.homedir(), 'Desktop', 'HTTP Telemetry data'), port)
+const dataWriter = new DataWriter(monitor, filesPath, port)
+
+const DataReader = require('./utils/data-reader')
+const dataReader = new DataReader()
 
 const RequestProcessor = require('./utils/request-processor')
 const requestProcessor = new RequestProcessor(dataWriter, monitor)
@@ -93,4 +98,18 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   app.quit()
+})
+
+ipcMain.handle('dialog:openFile', async () => {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    defaultPath: filesPath,
+    properties: ['openFile'],
+    filters: [
+      { name: 'Record', extensions: ['txt'] }
+    ]
+  })
+  if (canceled) {
+    return
+  }
+  window.webContents.send('data-update', await dataReader.readFile(filePaths[0]))
 })
