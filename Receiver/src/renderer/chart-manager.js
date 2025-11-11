@@ -22,7 +22,7 @@ const defaultLayout = {
   font: {
     color: '#cccccc'
   },
-  margin: { t: 30, r: 30, b: 50, l: 60 },
+  margin: { t: 30, r: 30, b: 10, l: 35 },
   dragmode: 'pan',
   hovermode: 'x',
   clickmode: 'event',
@@ -34,7 +34,15 @@ const defaultConfig = {
   displaylogo: false,
   scrollZoom: true,
   staticPlot: false,
-  modeBarButtonsToRemove: ['zoom', 'pan', 'select', 'lasso', 'resetScale', 'toImage']
+  modeBarButtons: [['zoomIn2d'], ['zoomOut2d'], [
+    {
+      name: 'autoscale',
+      icon: Plotly.Icons.autoscale ,
+      click: function (gd) {
+        Plotly.relayout(gd, { 'yaxis.autorange': true })
+      }
+    }
+  ]]
 }
 const defaultData = {
   type: 'scatter',
