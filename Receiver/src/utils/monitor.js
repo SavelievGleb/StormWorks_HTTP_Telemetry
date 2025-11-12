@@ -42,12 +42,23 @@ class Monitor {
             const framePerSecond = frameSinceLastUpdate / timeDiff
             this.averageRPS.add(requestPerSecond)
             this.averageFPS.add(framePerSecond)
-            process.stdout.write(`\rRequest: ${this.requestCount} ${Math.round(this.averageRPS.get())} Hz | Frame: ${this.frameCount} ${Math.round(this.averageFPS.get())} Hz | Processed: ${this.writeCount}/${this.frameCount}${' '.repeat(20)}`)
+        }
+
+        process.stdout.write(`\rRequest: ${this.requestCount} ${Math.floor(this.averageRPS.get())} Hz | Frame: ${this.frameCount} ${Math.floor(this.averageFPS.get())} Hz | Processed: ${this.writeCount}/${this.frameCount}${' '.repeat(20)}`)
+
+        const counters = {
+            requestCount: this.requestCount,
+            requestFrequency: Math.floor(this.averageRPS.get()),
+            frameCount: this.frameCount,
+            frameFrequency: Math.floor(this.averageFPS.get()),
+            writeCount: this.writeCount
         }
 
         this.lastDisplayRequestCount = this.requestCount
         this.lastDisplayFrameCount = this.frameCount
         this.lastUpdateTime = Date.now()
+
+        return counters
     }
 }
 

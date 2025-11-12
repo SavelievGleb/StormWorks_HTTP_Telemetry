@@ -1,19 +1,18 @@
-[![Version](https://img.shields.io/badge/version-1.0-blue.svg)](https://github.com/SavelievGleb/StormWorks_HTTP_Telemetry)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-22.20.0-green.svg)](https://nodejs.org/)
 
-> ⚠️ *This English translation was generated automatically and may contain inaccuracies. For the most accurate information, please refer to the [original Russian version](docs/README.ru.md).*
+> 🤖 **Note:** This translation was created automatically and may contain inaccuracies.
 
 # 🌎 **Choose your language:**
 
-## [English](#-table-of-contents) 🇺🇸 • [Русский](README.md) 🇷🇺
+## [English](#-table-of-contents) 🇺🇸 • [Русский](../README.md) 🇷🇺
 
 ## 📋 Table of Contents
 
 - [What is this project about?](#-stormworks-telemetry-collector)
 - [How does it work?](#-how-does-it-work)
-- [Installation Guide](#-installation)
-- [How to Use](#-how-to-use)
+- [Installation instructions](#-installation)
+- [How to use](#️-how-to-use)
 
 # 🚀 StormWorks Telemetry Collector
 
@@ -23,36 +22,54 @@ Created to make life easier for creators by providing simple and reliable access
 
 ## 💡 How does it work?
 
-**Lua** in StormWorks allows sending *http get requests to localhost*, which the program will accept, parse, and save to a text file.
+**Lua** in StormWorks allows sending *http get requests to localhost*, which the program will receive, parse, and save to a text file.
 
-The highly flexible data collection frequency settings allow you to tailor the controller to a specific task. In rare cases, a reduced data transmission rate might occur, which is managed by the microcontroller's data buffer.
+Very flexible configuration of data collection frequency allows you to tune the controller for a specific task. In rare cases, reduced data transmission speed is possible, but this is solved by a data buffer in the microcontroller.
 
 | Collection Frequency | Informativeness | Recommendations |
 |:---:|:---|:---|
-| **60 Hz** | 🟢 Maximum informativeness. Saves every tick. | For data that changes very abruptly. Ideal for tuning missiles/radar filters. |
-| **30 Hz** | 🟡 Decent informativeness. Saves every second data tick. | Suitable for tuning inertial systems. |
-| **20 Hz** | 🟠 Below average informativeness. Saves every third data tick. | For highly inertial data, such as fuel consumption or engine heat-up graphs. |
-| **< 20 Hz** | 🔴 Poor informativeness. | Not sure why you'd use this, but it's here anyway. |
-| **0.5 - 0.1 Hz** | 🟤 Absurdly low informativeness. | Specifically created for logging background data. |
+| **60 Hz** | 🟢 Maximum informativeness. Every tick is saved | For data that changes very sharply. Ideal for tuning missiles/radar filters |
+| **30 Hz** | 🟡 Decent informativeness. Every second data tick is saved | Suitable for tuning inertial systems |
+| **20 Hz** | 🟠 Below average informativeness. Every third data tick is saved | For highly inertial data, such as fuel consumption or engine heating graph |
+| **< 20 Hz** | 🔴 Poor informativeness. | I don't know what it's for myself, let it be |
+| **0.5 - 0.1 Hz** | 🟤 Terrible informativeness. Just forget about it | Specially created for logging background data |
 
-**I recommend selecting the frequency based on your specific task and performance*
+**I recommend selecting the frequency based on the task and performance in your specific case*
 
-## 🔧 Installation
+# 🔧 Installation
 
-1. You need to install [Node JS](https://nodejs.org/) from the official website. (*Chocolatey is not needed.*)
-    - Download *Windows installer (.msi)*
-    - Launch the installer, the installer window opens, and as usual, click "Next" and "Done"
-1. Download the project files from [Releases](https://github.com/SavelievGleb/StormWorks_HTTP_Telemetry/releases)
-1. Extract the project files to a folder convenient for you
-1. Open the *Server* folder, run `install.bat`. After the installation is complete (message **Install complete!**), close the console. The receiving server is ready to work.
-1. Next, you need to copy the controller to the game files. Open the *microprocessors* folder, run **copy to game.bat** or you can copy the *xml* and *png* files manually.
+1. Open [Releases](https://github.com/SavelievGleb/StormWorks_HTTP_Telemetry/releases)
+1. Download:
+    - Program installer - **Telemetry.Reciever.X.X.X.Setup.exe**
+    - Microcontroller file - **HTTP.Telemetry.xml**
+1. Run the installer and install the program<br>
+❗ The antivirus will pause the installation because there is no digital signature for the program ❗<br>
+You can either click **More info**, then **Run anyway** or disable the antivirus before installation.
+1. Copy **HTTP.Telemetry.xml** to the folder *C:\Users\%USERNAME%\AppData\Roaming\Stormworks\data\microprocessors*
 
-## ▶️ How to Use
+After completing all these steps, everything is ready to work
 
-1. In the project folder, run **Start server.bat**. A console window will appear with the message *Server started on 127.0.0.1:8080* - the server is running.
+# ▶ How to use
+
+1. Launch the **Telemetry Receiver** program via the desktop shortcut
 1. In the game:
-    1. Place the controller on your build
-    1. Connect a composite signal to *Data*, and a button to *Send*
-    1. Open the controller settings and enter names for the channels you want to collect. Channels with empty names will be ignored!
+    1. Place the controller on the build
+    1. Connect a composite signal to *Data*, a button to *Send*
+    1. Open the controller settings and write names for the required channels for collection. Channels with empty names will be ignored!
 
-Apply a **true** signal to *Send* (for example, a pressed button) - data collection and sending begins. The server console will display the data transfer rate *(frequency)* and the number of received telemetry frames. Frames are written to a *txt* file, each frame on a new line. The recorded *txt* files are stored in *Server/data*, with the filename format "*day-month-year hours-minutes-seconds (server port)*"
+Supply a **true** signal to *Send* (for example, an enabled button) - data collection and transmission begins.
+
+### The program window will display statistics on received data:
+1. Request
+    - count - Number of received requests
+    - frequency - Request reception frequency
+1. Frames
+    - count - Number of received telemetry frames
+    - frequency - Telemetry frame reception frequency
+1. Processed - Number of telemetry frames written to file
+
+### The program saves received data to a *txt* file in the **HTTP Telemetry data** folder on the desktop
+
+In the file, data is stored in **TSV (tab-separated values)** format
+- **Line 1**: Signal headers (names from controller settings)
+- **Line 2+**: Telemetry frames

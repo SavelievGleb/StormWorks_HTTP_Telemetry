@@ -1,7 +1,7 @@
 const fs = require('fs').promises
 const path = require('path')
 
-class FileHelper {
+class DataWriter {
   constructor(monitor, dirname, port = 8080) {
     this.monitor = monitor
     this.dirname = dirname
@@ -18,7 +18,7 @@ class FileHelper {
   }
 
   createFilePath() {
-    this.filePath = path.join(this.dirname, 'data', `${this.getTimestamp()} (${this.port}).txt`)
+    this.filePath = path.join(this.dirname, `${this.getTimestamp()} (${this.port}).txt`)
   }
 
   getTimestamp() {
@@ -59,4 +59,4 @@ class FileHelper {
   }
 }
 
-module.exports = FileHelper
+module.exports = DataWriter

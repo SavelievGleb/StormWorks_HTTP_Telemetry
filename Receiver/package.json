@@ -1,0 +1,40 @@
+{
+  "name": "telemetry_receiver",
+  "version": "1.3.0",
+  "productName": "Telemetry Receiver 1.3 beta",
+  "description": "",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
+  "author": "Saveliev Gleb",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.1.0",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "plotly.js-dist-min": "^2.35.2"
+  },
+  "devDependencies": {
+    "electron": "^39.1.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "productName": "Telemetry Receiver",
+    "artifactName": "${productName} ${version} Setup.${ext}",
+    "directories": {
+      "output": "build"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "src/renderer/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}
