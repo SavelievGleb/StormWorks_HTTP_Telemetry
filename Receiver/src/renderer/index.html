@@ -4,8 +4,7 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="style.css">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
-    <script src="../../node_modules/plotly.js-dist-min/plotly.min.js"></script>
+    <script src="../../node_modules/plotly.js-dist/plotly.js"></script>
 </head>
 
 <body>
@@ -46,11 +45,16 @@
         </div>
     </div>
 
+    <div class="container" style="justify-content: left;">
+        <button id="loadFileButton">Load file</button>
+    </div>
+
     <div class="chart-container">
         <div id="chart" class="chart-panel"></div>
     </div>
 
-    <script src="renderer.js"></script>
+    <script type="module" src="renderer.js"></script>
+    <script type="module" src="chart-manager.js"></script>
 </body>
 
 </html>
