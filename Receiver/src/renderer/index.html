@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="panel">
+            <div class="panel-header">Request</div>
+            <div class="panel-content">
+                <div class="value-block">
+                    <span class="label">Count</span>
+                    <span class="value" id="request-count">0</span>
+                </div>
+                <div class="value-block">
+                    <span class="label">Frequency (Hz)</span>
+                    <span class="value" id="request-frequency">0</span>
+                </div>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-header">Frames</div>
+            <div class="panel-content">
+                <div class="value-block">
+                    <span class="label">Count</span>
+                    <span class="value" id="frame-count">0</span>
+                </div>
+                <div class="value-block">
+                    <span class="label">Frequency (Hz)</span>
+                    <span class="value" id="frame-frequency">0</span>
+                </div>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-header">Processed</div>
+            <div class="panel-content">
+                <span class="value" id="write-count">0</span>
+                <span class="label">/</span>
+                <span class="value" id="processed-frames-count">0</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+
+</html>

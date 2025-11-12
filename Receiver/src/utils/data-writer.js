@@ -18,7 +18,7 @@ class DataWriter {
   }
 
   createFilePath() {
-    this.filePath = path.join(this.dirname, 'data', `${this.getTimestamp()} (${this.port}).txt`)
+    this.filePath = path.join(this.dirname, `${this.getTimestamp()} (${this.port}).txt`)
   }
 
   getTimestamp() {

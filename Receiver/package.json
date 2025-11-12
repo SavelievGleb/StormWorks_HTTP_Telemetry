@@ -1,11 +1,12 @@
 {
   "name": "telemetry_receiver",
   "version": "1.0.0",
+  "productName": "Telemetry Receiver",
   "description": "",
   "main": "src/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src\\server.js"
+    "start": "electron .",
+    "build": "electron-builder --win"
   },
   "author": "Saveliev Gleb",
   "license": "MIT",
@@ -13,5 +14,26 @@
     "express": "^5.1.0",
     "fs": "^0.0.1-security",
     "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "electron": "^39.1.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "productName": "Telemetry Receiver",
+    "artifactName": "${productName} ${version} Setup.${ext}",
+    "directories": {
+      "output": "build"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "src/renderer/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
   }
 }
