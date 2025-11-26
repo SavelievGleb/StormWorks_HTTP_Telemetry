@@ -3,10 +3,6 @@ const defaultLayout = {
     color: '#cccccc',
     gridcolor: '#666666',
     zerolinecolor: '#666666',
-    rangeslider: {
-      visible: true,
-      thickness: 0.1,
-    },
   },
   yaxis: {
     color: '#cccccc',
@@ -22,7 +18,7 @@ const defaultLayout = {
   font: {
     color: '#cccccc'
   },
-  margin: { t: 30, r: 30, b: 10, l: 35 },
+  margin: { t: 30, r: 30, b: 35, l: 45 },
   dragmode: 'pan',
   hovermode: 'x',
   clickmode: 'event',
@@ -45,7 +41,7 @@ const defaultConfig = {
   ]]
 }
 const defaultData = {
-  type: 'scatter',
+  type: 'scattergl',
   mode: 'lines',
   x: [],
   y: [],
