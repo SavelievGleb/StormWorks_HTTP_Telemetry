@@ -3,10 +3,6 @@ const defaultLayout = {
     color: '#cccccc',
     gridcolor: '#666666',
     zerolinecolor: '#666666',
-    rangeslider: {
-      visible: true,
-      thickness: 0.1,
-    },
   },
   yaxis: {
     color: '#cccccc',
@@ -22,7 +18,7 @@ const defaultLayout = {
   font: {
     color: '#cccccc'
   },
-  margin: { t: 30, r: 30, b: 10, l: 35 },
+  margin: { t: 30, r: 30, b: 35, l: 45 },
   dragmode: 'pan',
   hovermode: 'x',
   clickmode: 'event',
@@ -34,18 +30,24 @@ const defaultConfig = {
   displaylogo: false,
   scrollZoom: true,
   staticPlot: false,
-  modeBarButtons: [['zoomIn2d'], ['zoomOut2d'], [
+  modeBarButtons: [['zoomIn2d'], ['zoomOut2d'], ['toImage'], [
     {
       name: 'autoscale',
-      icon: Plotly.Icons.autoscale ,
+      icon: Plotly.Icons.autoscale,
       click: function (gd) {
         Plotly.relayout(gd, { 'yaxis.autorange': true })
       }
     }
-  ]]
+  ]],
+  toImageButtonOptions: {
+    format: 'png',
+    width: 1920,
+    height: 1080,
+    scale: 1
+  }
 }
 const defaultData = {
-  type: 'scatter',
+  type: 'scattergl',
   mode: 'lines',
   x: [],
   y: [],
