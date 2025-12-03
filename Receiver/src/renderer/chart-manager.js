@@ -30,15 +30,21 @@ const defaultConfig = {
   displaylogo: false,
   scrollZoom: true,
   staticPlot: false,
-  modeBarButtons: [['zoomIn2d'], ['zoomOut2d'], [
+  modeBarButtons: [['zoomIn2d'], ['zoomOut2d'], ['toImage'], [
     {
       name: 'autoscale',
-      icon: Plotly.Icons.autoscale ,
+      icon: Plotly.Icons.autoscale,
       click: function (gd) {
         Plotly.relayout(gd, { 'yaxis.autorange': true })
       }
     }
-  ]]
+  ]],
+  toImageButtonOptions: {
+    format: 'png',
+    width: 1920,
+    height: 1080,
+    scale: 1
+  }
 }
 const defaultData = {
   type: 'scattergl',
