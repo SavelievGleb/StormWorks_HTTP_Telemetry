@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    <div class="container">
+    <div id="statisticsPanel" class="container collapsed">
         <div class="panel">
             <div class="panel-header">Request</div>
             <div class="panel-content">
@@ -46,6 +46,7 @@
     </div>
 
     <div class="container" style="justify-content: left;">
+        <button id="toggleInfoButton">Show Info</button>
         <button id="loadFileButton">Load file</button>
     </div>
 
@@ -55,6 +56,32 @@
 
     <script type="module" src="renderer.js"></script>
     <script type="module" src="chart-manager.js"></script>
+
+    <script type="module">
+        const toggleButton = document.getElementById('toggleInfoButton');
+        const headerPanel = document.getElementById('statisticsPanel');
+        let isCollapsed = true;
+
+        toggleButton.addEventListener('click', () => {
+            isCollapsed = !isCollapsed;
+
+            if (isCollapsed) {
+                headerPanel.classList.add('collapsed');
+                toggleButton.textContent = 'Show Info';
+                toggleButton.classList.add('collapsed-state');
+            } else {
+                headerPanel.classList.remove('collapsed');
+                toggleButton.textContent = 'Hide Info';
+                toggleButton.classList.remove('collapsed-state');
+            }
+
+            if (typeof Plotly !== 'undefined') {
+                setTimeout(() => {
+                    window.dispatchEvent(new Event('resize'));
+                }, 300);
+            }
+        });
+    </script>
 </body>
 
 </html>
